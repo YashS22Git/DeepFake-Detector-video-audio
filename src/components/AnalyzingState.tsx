@@ -4,7 +4,6 @@ import { cn } from '@/lib/utils';
 
 interface AnalyzingStateProps {
   fileName: string;
-  onComplete: () => void;
 }
 
 const analysisSteps = [
@@ -14,7 +13,7 @@ const analysisSteps = [
   { icon: Shield, label: 'Context Verification', description: 'Cross-referencing metadata...' },
 ];
 
-export const AnalyzingState = ({ fileName, onComplete }: AnalyzingStateProps) => {
+export const AnalyzingState = ({ fileName }: AnalyzingStateProps) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [progress, setProgress] = useState(0);
 
@@ -23,7 +22,6 @@ export const AnalyzingState = ({ fileName, onComplete }: AnalyzingStateProps) =>
       setCurrentStep(prev => {
         if (prev >= analysisSteps.length - 1) {
           clearInterval(stepInterval);
-          setTimeout(onComplete, 1000);
           return prev;
         }
         return prev + 1;
@@ -44,7 +42,7 @@ export const AnalyzingState = ({ fileName, onComplete }: AnalyzingStateProps) =>
       clearInterval(stepInterval);
       clearInterval(progressInterval);
     };
-  }, [onComplete]);
+  }, []);
 
   return (
     <div className="glass-card p-8 space-y-8 animate-fade-in">
@@ -68,7 +66,7 @@ export const AnalyzingState = ({ fileName, onComplete }: AnalyzingStateProps) =>
           <span className="font-mono text-foreground">{progress}%</span>
         </div>
         <div className="h-2 bg-muted/50 rounded-full overflow-hidden">
-          <div 
+          <div
             className="h-full bg-gradient-to-r from-primary to-primary/60 rounded-full transition-all duration-300"
             style={{ width: `${progress}%` }}
           />
@@ -81,9 +79,9 @@ export const AnalyzingState = ({ fileName, onComplete }: AnalyzingStateProps) =>
           const Icon = step.icon;
           const isActive = index === currentStep;
           const isComplete = index < currentStep;
-          
+
           return (
-            <div 
+            <div
               key={index}
               className={cn(
                 "flex items-center gap-4 p-4 rounded-xl border transition-all duration-300",

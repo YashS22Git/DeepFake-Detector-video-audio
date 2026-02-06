@@ -5,10 +5,8 @@ interface AnalysisResultProps {
   result: {
     isAIGenerated: boolean;
     aiConfidence: number;
-    isEdited: boolean;
-    editConfidence: number;
-    contextMismatch: boolean;
-    contextDetails?: string;
+    visualArtifactsScore: number; // Replaces isEdited (0-100 score of visual anomalies)
+    temporalStabilityScore: number; // Replaces contextMismatch (0-100 score of frame consistency)
     overallRiskScore: number;
     reasons: string[];
     methodology: string[];
@@ -64,11 +62,11 @@ export const AnalysisResult = ({ result }: AnalysisResultProps) => {
           <span className="text-2xl text-muted-foreground mb-1">/ 100</span>
         </div>
         <div className="mt-4 h-2 bg-muted/50 rounded-full overflow-hidden">
-          <div 
+          <div
             className={cn(
               "h-full rounded-full transition-all duration-1000",
-              result.overallRiskScore >= 70 ? 'bg-danger' : 
-              result.overallRiskScore >= 40 ? 'bg-warning' : 'bg-success'
+              result.overallRiskScore >= 70 ? 'bg-danger' :
+                result.overallRiskScore >= 40 ? 'bg-warning' : 'bg-success'
             )}
             style={{ width: `${result.overallRiskScore}%` }}
           />
@@ -77,16 +75,16 @@ export const AnalysisResult = ({ result }: AnalysisResultProps) => {
 
       {/* Detection Results Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* AI Generated */}
+        {/* Core AI Detection - The Primary Model Output */}
         <div className={cn(
           "p-4 rounded-xl border transition-all",
-          result.isAIGenerated 
-            ? "bg-danger/10 border-danger/30" 
+          result.isAIGenerated
+            ? "bg-danger/10 border-danger/30"
             : "bg-success/10 border-success/30"
         )}>
           <div className="flex items-center gap-2 mb-3">
             <Brain className={cn("w-5 h-5", result.isAIGenerated ? "text-danger" : "text-success")} />
-            <span className="font-medium">AI-Generated</span>
+            <span className="font-medium">Deepfake Probability</span>
           </div>
           <div className="flex items-center gap-2">
             {result.isAIGenerated ? (
@@ -98,72 +96,60 @@ export const AnalysisResult = ({ result }: AnalysisResultProps) => {
               "text-lg font-semibold",
               result.isAIGenerated ? "text-danger" : "text-success"
             )}>
-              {result.isAIGenerated ? "Yes" : "No"}
+              {result.aiConfidence}%
             </span>
           </div>
           <p className="text-xs text-muted-foreground mt-2">
-            {result.aiConfidence}% confidence
+            Based on XceptionNet analysis
           </p>
         </div>
 
-        {/* Edited */}
+        {/* Visual Artifacts - What the model actually sees (textures) */}
         <div className={cn(
           "p-4 rounded-xl border transition-all",
-          result.isEdited 
-            ? "bg-warning/10 border-warning/30" 
+          result.visualArtifactsScore > 50
+            ? "bg-warning/10 border-warning/30"
             : "bg-success/10 border-success/30"
         )}>
           <div className="flex items-center gap-2 mb-3">
-            <Zap className={cn("w-5 h-5", result.isEdited ? "text-warning" : "text-success")} />
-            <span className="font-medium">Edited</span>
+            <Eye className={cn("w-5 h-5", result.visualArtifactsScore > 50 ? "text-warning" : "text-success")} />
+            <span className="font-medium">Visual Artifacts</span>
           </div>
           <div className="flex items-center gap-2">
-            {result.isEdited ? (
-              <AlertTriangle className="w-6 h-6 text-warning" />
-            ) : (
-              <CheckCircle2 className="w-6 h-6 text-success" />
-            )}
             <span className={cn(
               "text-lg font-semibold",
-              result.isEdited ? "text-warning" : "text-success"
+              result.visualArtifactsScore > 50 ? "text-warning" : "text-success"
             )}>
-              {result.isEdited ? "Yes" : "No"}
+              {result.visualArtifactsScore > 50 ? "Detected" : "Clean"}
             </span>
           </div>
           <p className="text-xs text-muted-foreground mt-2">
-            {result.editConfidence}% confidence
+            {result.visualArtifactsScore}% texture anomaly score
           </p>
         </div>
 
-        {/* Context Mismatch */}
+        {/* Temporal Stability - Derived from our Frame-by-Frame Analysis */}
         <div className={cn(
           "p-4 rounded-xl border transition-all",
-          result.contextMismatch 
-            ? "bg-danger/10 border-danger/30" 
+          result.temporalStabilityScore < 70
+            ? "bg-danger/10 border-danger/30"
             : "bg-success/10 border-success/30"
         )}>
           <div className="flex items-center gap-2 mb-3">
-            <Eye className={cn("w-5 h-5", result.contextMismatch ? "text-danger" : "text-success")} />
-            <span className="font-medium">Context Match</span>
+            <Zap className={cn("w-5 h-5", result.temporalStabilityScore < 70 ? "text-danger" : "text-success")} />
+            <span className="font-medium">Temporal Stability</span>
           </div>
           <div className="flex items-center gap-2">
-            {result.contextMismatch ? (
-              <XCircle className="w-6 h-6 text-danger" />
-            ) : (
-              <CheckCircle2 className="w-6 h-6 text-success" />
-            )}
             <span className={cn(
               "text-lg font-semibold",
-              result.contextMismatch ? "text-danger" : "text-success"
+              result.temporalStabilityScore < 70 ? "text-danger" : "text-success"
             )}>
-              {result.contextMismatch ? "Mismatch" : "Valid"}
+              {result.temporalStabilityScore}%
             </span>
           </div>
-          {result.contextMismatch && result.contextDetails && (
-            <p className="text-xs text-muted-foreground mt-2">
-              {result.contextDetails}
-            </p>
-          )}
+          <p className="text-xs text-muted-foreground mt-2">
+            Frame-to-frame consistency
+          </p>
         </div>
       </div>
 
@@ -176,7 +162,7 @@ export const AnalysisResult = ({ result }: AnalysisResultProps) => {
           </div>
           <ul className="space-y-2">
             {result.reasons.map((reason, index) => (
-              <li 
+              <li
                 key={index}
                 className="flex items-start gap-3 p-3 rounded-lg bg-muted/30 border border-border/50"
               >
@@ -197,7 +183,7 @@ export const AnalysisResult = ({ result }: AnalysisResultProps) => {
         </h3>
         <div className="flex flex-wrap gap-2">
           {result.methodology.map((method, index) => (
-            <span 
+            <span
               key={index}
               className="px-3 py-1.5 rounded-lg bg-muted/50 border border-border/50 text-xs text-muted-foreground"
             >

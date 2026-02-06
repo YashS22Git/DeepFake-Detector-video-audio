@@ -6,9 +6,8 @@ interface EvidenceReportProps {
   result: {
     isAIGenerated: boolean;
     aiConfidence: number;
-    isEdited: boolean;
-    editConfidence: number;
-    contextMismatch: boolean;
+    visualArtifactsScore: number;
+    temporalStabilityScore: number;
     overallRiskScore: number;
     reasons: string[];
     methodology: string[];
@@ -68,9 +67,9 @@ export const EvidenceReport = ({ result, fileName, analysisDate }: EvidenceRepor
           <div>
             <span className="text-muted-foreground">Analysis Date:</span>
             <p className="font-medium text-foreground mt-1">
-              {analysisDate.toLocaleDateString('en-US', { 
-                year: 'numeric', 
-                month: 'long', 
+              {analysisDate.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
                 day: 'numeric',
                 hour: '2-digit',
                 minute: '2-digit'
@@ -95,8 +94,8 @@ export const EvidenceReport = ({ result, fileName, analysisDate }: EvidenceRepor
                 <td className="px-4 py-3">
                   <span className={cn(
                     "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium",
-                    result.isAIGenerated 
-                      ? "bg-danger/10 text-danger" 
+                    result.isAIGenerated
+                      ? "bg-danger/10 text-danger"
                       : "bg-success/10 text-success"
                   )}>
                     {result.isAIGenerated ? (
@@ -109,40 +108,40 @@ export const EvidenceReport = ({ result, fileName, analysisDate }: EvidenceRepor
                 <td className="px-4 py-3 font-mono text-muted-foreground">{result.aiConfidence}%</td>
               </tr>
               <tr>
-                <td className="px-4 py-3 text-foreground">Post-Production Editing</td>
+                <td className="px-4 py-3 text-foreground">Visual Artifacts</td>
                 <td className="px-4 py-3">
                   <span className={cn(
                     "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium",
-                    result.isEdited 
-                      ? "bg-warning/10 text-warning" 
+                    result.visualArtifactsScore > 50
+                      ? "bg-warning/10 text-warning"
                       : "bg-success/10 text-success"
                   )}>
-                    {result.isEdited ? (
+                    {result.visualArtifactsScore > 50 ? (
                       <><AlertTriangle className="w-3 h-3" /> Detected</>
                     ) : (
-                      <><CheckCircle2 className="w-3 h-3" /> Not Detected</>
+                      <><CheckCircle2 className="w-3 h-3" /> Clean</>
                     )}
                   </span>
                 </td>
-                <td className="px-4 py-3 font-mono text-muted-foreground">{result.editConfidence}%</td>
+                <td className="px-4 py-3 font-mono text-muted-foreground">{result.visualArtifactsScore}%</td>
               </tr>
               <tr>
-                <td className="px-4 py-3 text-foreground">Context Verification</td>
+                <td className="px-4 py-3 text-foreground">Temporal Stability</td>
                 <td className="px-4 py-3">
                   <span className={cn(
                     "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium",
-                    result.contextMismatch 
-                      ? "bg-danger/10 text-danger" 
+                    result.temporalStabilityScore < 50
+                      ? "bg-danger/10 text-danger"
                       : "bg-success/10 text-success"
                   )}>
-                    {result.contextMismatch ? (
-                      <><AlertTriangle className="w-3 h-3" /> Mismatch Found</>
+                    {result.temporalStabilityScore < 50 ? (
+                      <><AlertTriangle className="w-3 h-3" /> Unstable</>
                     ) : (
-                      <><CheckCircle2 className="w-3 h-3" /> Verified</>
+                      <><CheckCircle2 className="w-3 h-3" /> Stable</>
                     )}
                   </span>
                 </td>
-                <td className="px-4 py-3 font-mono text-muted-foreground">—</td>
+                <td className="px-4 py-3 font-mono text-muted-foreground">{result.temporalStabilityScore}%</td>
               </tr>
             </tbody>
           </table>
@@ -164,7 +163,7 @@ export const EvidenceReport = ({ result, fileName, analysisDate }: EvidenceRepor
         <div>
           <h4 className="font-medium text-foreground mb-3">Analysis Methodology</h4>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            This analysis was conducted using industry-standard forensic detection algorithms including: {result.methodology.join(', ')}. 
+            This analysis was conducted using industry-standard forensic detection algorithms including: {result.methodology.join(', ')}.
             All confidence intervals are calculated using statistical models validated against known authentic and manipulated media samples.
           </p>
         </div>

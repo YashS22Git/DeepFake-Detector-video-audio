@@ -1,0 +1,12 @@
+flask
+flask-cors
+pymongo
+python-dotenv
+requests
+google-generativeai
+typing_extensions>=4.9.0
+tensorflow
+mtcnn
+opencv-python
+numpy
+yt-dlp
