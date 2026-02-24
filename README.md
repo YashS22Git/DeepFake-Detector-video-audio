@@ -1,73 +1,101 @@
-# Welcome to your Lovable project
+# VerifyAI - Deepfake Detection System
 
-## Project info
+A comprehensive deepfake detection application, VerifyAI utilizes deep learning models and cloud AI services to analyze media for authenticity. It features a React-based frontend and a Python/Flask API backend backed by MongoDB.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Features
 
-## How can I edit this code?
+- **Deepfake Analysis**: Leverages a custom deep learning model (e.g. Xception, MTCNN) for local, fast media inference.
+- **Cloud-Powered Forensics (Optional)**: Integrates with Azure Video Indexer and Azure OpenAI / Google Gemini to generate deeper, contextual forensic reports and analysis details.
+- **URL Analysis**: Supports downloading and analyzing videos straight from YouTube via `yt-dlp`.
+- **Modern User Interface**: Built with React, Vite, Tailwind CSS, and shadcn-ui.
+- **History Tracking**: Saves analysis results, temporal data, and media metadata in MongoDB for user reference.
 
-There are several ways of editing your application.
+## Tech Stack
 
-**Use Lovable**
+### Frontend
+- React 18, TypeScript, Vite
+- Tailwind CSS, shadcn-ui, Radix UI
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+### Backend
+- Python 3.9+, Flask
+- TensorFlow / Keras (Local Model inference)
+- yt-dlp (YouTube URL Analysis)
+- MongoDB (pymongo for history storage)
 
-Changes made via Lovable will be committed automatically to this repo.
+### API Integrations
+- Azure Video Indexer
+- Azure OpenAI
+- Google Gemini
 
-**Use your preferred IDE**
+## Setup Instructions
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+### 1. Clone the Repository
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
 git clone <YOUR_GIT_URL>
+cd Microsoft_Hack
+```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### 2. Frontend Setup
 
-# Step 3: Install the necessary dependencies.
-npm i
+The frontend uses Vite and npm.
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+```sh
+# Install dependencies
+npm install
+
+# Start the development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The frontend will run on its default Vite port (`http://localhost:5173` or similar).
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### 3. Backend Setup
 
-**Use GitHub Codespaces**
+The backend relies on Flask and several Python packages.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```sh
+cd backend
 
-## What technologies are used for this project?
+# Create and activate a virtual environment (optional but recommended)
+python -m venv venv
 
-This project is built with:
+# Windows
+.\venv\Scripts\activate
+# Linux/Mac
+source venv/bin/activate
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+# Install dependencies
+pip install -r requirements.txt
 
-## How can I deploy this project?
+# Create .env file based on .env.example
+cp .env.example .env
+```
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+### 4. Configuration (`backend/.env`)
 
-## Can I connect a custom domain to my Lovable project?
+Modify the `backend/.env` file with your credentials to enable history tracking and cloud AI features:
 
-Yes, you can!
+- **MongoDB**
+  - `MONGO_URI`: Your MongoDB connection string (Required for history).
+- **Azure Cloud Services (Optional)**
+  - `AZURE_VI_ACCOUNT_ID`, `AZURE_VI_API_KEY`, `AZURE_VI_LOCATION`
+  - `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_KEY`, `AZURE_OPENAI_DEPLOYMENT`
+- **Google Gemini (Optional)**
+  - `GEMINI_API_KEY`: Used as an alternative to Azure OpenAI.
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### 5. Running the Backend
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+```sh
+# Run the backend application
+python app.py
+```
+
+The backend server will run on `http://localhost:5000`.
+
+## Usage
+
+1. Start both the frontend (`npm run dev`) and backend (`python app.py`) servers.
+2. Navigate to the frontend UI.
+3. Upload an image/video or provide a URL to analyze for deepfakes.
+4. View real-time results, risk scores, confidence metrics, and AI-generated forensic reports.
