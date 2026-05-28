@@ -14,7 +14,6 @@ A comprehensive deepfake detection application, VerifyAI utilizes deep learning 
 
 ### Frontend
 - React 18, TypeScript, Vite
-- Tailwind CSS, shadcn-ui, Radix UI
 
 ### Backend
 - Python 3.9+, Flask
